@@ -7,6 +7,24 @@ SnakeGame.game = (function(){
   SnakeGame.height = 400;
   SnakeGame.blockSize = 10;
   var frameLength = 100; //new frame every 0.5 seconds
+  SnakeGame.widthInBlocks = SnakeGame.width /SnakeGame.blockSize;
+  SnakeGame.heightInBlocks = SnakeGame.height /SnakeGame.blockSize;
+
+SnakeGame.equalCoordinates = function (coord1, coord2) {
+  return coord1[0] === coord2[0] && coord1[1] === coord2[1];
+}
+
+SnakeGame.checkCoordinateInArray = function (coord, arr) {
+  var isInArray = false;
+  $.each(arr, function (index, item) {
+    if (JS_SNAKE.equalCoordinates(coord, item)) {
+      isInArray = true;
+    }
+  });
+  return isInArray;
+};
+
+
 
 //Initiate Program
 function init(){
@@ -18,7 +36,7 @@ var canvas = $canvas[0];
 ctx = canvas.getContext('2d'); 
 Snake = SnakeGame.Snake;
 Apple = SnakeGame.Apple;
-Apple.drawApple(ctx);
+
 gameLoop();
 }
 
@@ -26,8 +44,8 @@ function gameLoop(){
   ctx.clearRect(0,0,SnakeGame.height, SnakeGame.width)
   Snake.advanceSnake();
   Snake.drawSnake(ctx);
-
- setTimeout(gameLoop, frameLength);
+  Apple.drawApple(ctx);
+  setTimeout(gameLoop, frameLength);
 }
 
 return{
@@ -45,14 +63,13 @@ function Draw_Apple(ctx){
 ctx.save();
 ctx.fillStyle = '#4682B4';
 ctx.fillStoke = 'black';
-var radius = SnakeGame.blockSize/2;
-var x = SnakeGame.blockSize * Math.round(Math.random() * SnakeGame.width/ SnakeGame.blockSize)  ;
-var y = SnakeGame.blockSize * Math.round(Math.random() * SnakeGame.width/ SnakeGame.blockSize) ;
-ctx.beginPath();
-ctx.arc(x, y,SnakeGame.blockSize/2 ,0,2*Math.PI, true);
-ctx.fill();
+var x = SnakeGame.blockSize * apple_Position[0];
+var y = SnakeGame.blockSize * apple_Position[1];
+ctx.fillRect(x, y, SnakeGame.blockSize, SnakeGame.blockSize);
+ctx.strokeRect(x, y, SnakeGame.blockSize, SnakeGame.blockSize);
 ctx.restore();
 }
+
 
 return{
   drawApple : Draw_Apple
@@ -124,6 +141,18 @@ function AdvanceSnake(){
   });
   var moveSnake;
   moveSnake = positionArray[0].slice();
+  if (moveSnake[0] <= -1 || moveSnake[1] <= -1 || moveSnake[0] > ( SnakeGame.widthInBlocks - 1) || 
+    moveSnake[1] > (SnakeGame.heightInBlocks - 1) ){
+  direction = 'right';
+    while(positionArray.length > 0) {
+    positionArray.pop();
+    }
+  positionArray.push([6,4]);
+  positionArray.push([5,4]);
+  positionArray.push([4,4]);
+
+  }
+  else{
   if(direction == 'right'){
   moveSnake[0] += 1;
   }
@@ -138,7 +167,7 @@ function AdvanceSnake(){
   }
   positionArray.unshift(moveSnake);
   positionArray.pop();
- 
+  }
 }
 
 
