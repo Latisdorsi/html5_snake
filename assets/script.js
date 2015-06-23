@@ -42,7 +42,7 @@ gameLoop();
 
 function gameLoop(){
   ctx.clearRect(0,0,SnakeGame.height, SnakeGame.width)
-  Snake.advanceSnake();
+  Snake.advanceSnake(Apple);
   Snake.drawSnake(ctx);
   Apple.drawApple(ctx);
   setTimeout(gameLoop, frameLength);
@@ -58,21 +58,32 @@ return{
 SnakeGame.Apple = (function(){
 var apple_Position = [];
 apple_Position = [20,20];
+var x = SnakeGame.blockSize * apple_Position[0];
+var y = SnakeGame.blockSize * apple_Position[1];
 
 function Draw_Apple(ctx){
 ctx.save();
 ctx.fillStyle = '#4682B4';
 ctx.fillStoke = 'black';
-var x = SnakeGame.blockSize * apple_Position[0];
-var y = SnakeGame.blockSize * apple_Position[1];
 ctx.fillRect(x, y, SnakeGame.blockSize, SnakeGame.blockSize);
 ctx.strokeRect(x, y, SnakeGame.blockSize, SnakeGame.blockSize);
 ctx.restore();
 }
 
+function New_Position(){
+  x = Math.Floor(Math.Random() * SnameGame.blockSize - ) 
+
+
+}
+
+function Get_Position(){
+  return apple_Position;
+}
+
 
 return{
-  drawApple : Draw_Apple
+  drawApple : Draw_Apple,
+  getPosition: Get_Position 
 };
 
 
@@ -89,6 +100,7 @@ SnakeGame.Snake = (function(){
   positionArray.push([5,4]);
   positionArray.push([4,4]);
   var direction = 'right';
+  Apple = SnakeGame.Apple;
 
 function DrawSnake(ctx){
   ctx.save();
@@ -112,7 +124,7 @@ function FillSnake(ctx, position){
 }
 
 
-function AdvanceSnake(){
+function AdvanceSnake(apple){
 
   //moveSnake[0] += 1; //add 1 to the x position 
 
@@ -139,8 +151,10 @@ function AdvanceSnake(){
     }
     e.preventDefault(); // prevent the default action (scroll / move caret)
   });
+
   var moveSnake;
   moveSnake = positionArray[0].slice();
+
   if (moveSnake[0] <= -1 || moveSnake[1] <= -1 || moveSnake[0] > ( SnakeGame.widthInBlocks - 1) || 
     moveSnake[1] > (SnakeGame.heightInBlocks - 1) ){
   direction = 'right';
@@ -151,24 +165,33 @@ function AdvanceSnake(){
   positionArray.push([5,4]);
   positionArray.push([4,4]);
 
-  }
+  } 
+
   else{
   if(direction == 'right'){
   moveSnake[0] += 1;
   }
-   if(direction == 'left'){
+  else if(direction == 'left'){
   moveSnake[0] -= 1;
   }
-   if(direction == 'up'){
+  else if(direction == 'up'){
   moveSnake[1] -= 1;
   }
-   if(direction == 'down'){
+  else if(direction == 'down'){
   moveSnake[1] += 1;
   }
+
   positionArray.unshift(moveSnake);
-  positionArray.pop();
+  if (SnakeGame.equalCoordinates(positionArray[0], Apple.getPosition()) == true){
+
+  }
+  else{
+    positionArray.pop();
+  }
+
   }
 }
+
 
 
 return {
