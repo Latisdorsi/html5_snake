@@ -3,6 +3,7 @@ var SnakeGame = {};
 
 SnakeGame.game = (function(){ 
   var ctx;
+  SnakeGame.score = 0;
   SnakeGame.width = 400;
   SnakeGame.height = 400;
   SnakeGame.blockSize = 10;
@@ -43,12 +44,25 @@ gameLoop();
 function gameLoop(){
   ctx.clearRect(0,0,SnakeGame.height, SnakeGame.width)
   Snake.advanceSnake(Apple);
+
+  drawScore();
   Snake.drawSnake(ctx);
   Apple.drawApple(ctx);
   Apple.getPosition();
+
   setTimeout(gameLoop, frameLength);
 }
-
+  function drawScore() {
+    ctx.save();
+    ctx.font = 'bold 102px sans-serif';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    var centreX = SnakeGame.width / 2;
+    var centreY = SnakeGame.width / 2;
+    ctx.fillText(SnakeGame.score.toString(), centreX, centreY);
+    ctx.restore();
+  } 
 function bindEvents() {
     var keysToDirections = {
       37: 'left',
@@ -116,8 +130,7 @@ function Get_Position(){
         apple_Position[0] = x/SnakeGame.blockSize;
         apple_Position[1] = y/SnakeGame.blockSize;
       }
-      console.log(newPosition);
-      console.log(snake);
+
 
 }
 
@@ -197,10 +210,11 @@ function AdvanceSnake(apple){
   rest = positionArray.slice(1);
   snakeCollision = SnakeGame.checkCoordinateInArray(moveSnake, rest);
   direction = nextDirection;
-  
+
     if (snakeCollision == true | moveSnake[0] <= -1 || moveSnake[1] <= -1 || moveSnake[0] > ( SnakeGame.widthInBlocks - 1) || 
       moveSnake[1] > (SnakeGame.heightInBlocks - 1) ){
-        direction = 'right';
+        nextDirection = 'right';
+        SnakeGame.score = 0;
         while(positionArray.length > 0) {
         positionArray.pop();
         }
@@ -226,7 +240,7 @@ function AdvanceSnake(apple){
         moveSnake[1] += 1;
         }
         if (SnakeGame.equalCoordinates(positionArray[0], Apple.getPosition()) == true){
-          //Insert Score System Here
+            SnakeGame.score += 1;
             apple.changePosition([x,y]);
         }
         else{
